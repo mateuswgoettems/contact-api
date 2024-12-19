@@ -1,0 +1,25 @@
+import { Injectable } from '@nestjs/common';
+import { newMessageCreatedDTO } from './createMessage.dto';
+import { PrismaService } from './database/prisma.service';
+
+@Injectable()
+export class AppService {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  healthcheck(): { status: string } {
+    return { status: 'Running!' };
+  }
+
+  newMessageCreated(messageBody: newMessageCreatedDTO) {
+    try {
+      this.prismaService.message.create({ data: messageBody });
+
+      return {
+        statusCode: 200,
+        message: 'Success',
+      };
+    } catch (err) {
+      console.log(err);
+    }
+  }
+}
