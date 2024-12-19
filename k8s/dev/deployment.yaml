@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contact-api
+  namespace: manutencao-de-piscina
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: contact-api
+  template:
+    metadata:
+      labels:
+        app: contact-api
+    spec:
+      terminationGracePeriodSeconds: 60
+      automountServiceAccountToken: false
+      initContainers:
+      - name: migrations-contact-api
+        image: gru.ocir.io/grffsstogo8v/dev-contact-api:0.0.1
+        command: ["sh", "-c", "yarn migrate:prod --schema ./database/schema.prisma"]
+        envFrom:
+        - secretRef:
+            name: contact-api-secrets
+        resources:
+          limits:
+            cpu: 128m
+            memory: 256Mi
+          requests:
+            cpu: 128m
+            memory: 256Mi
+      containers:
+      - name: contact-api
+        image: gru.ocir.io/grffsstogo8v/dev-contact-api:0.0.1
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: contact-api-secrets
+        resources:
+          limits:
+            cpu: 512m
+            memory: 2048Mi
+          requests:
+            cpu: 128m
+            memory: 256Mi
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      imagePullSecrets:
+      - name: docker-registry-ocir
