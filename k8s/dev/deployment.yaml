@@ -22,7 +22,7 @@ spec:
       automountServiceAccountToken: false
       initContainers:
       - name: migrations-contact-api
-        image: gru.ocir.io/grffsstogo8v/dev-contact-api:0.0.1
+        image: gru.ocir.io/grffsstogo8v/dev-contact-api:0.0.2
         command: ["sh", "-c", "yarn migrate:prod --schema ./database/schema.prisma"]
         envFrom:
         - secretRef:
@@ -36,7 +36,7 @@ spec:
             memory: 256Mi
       containers:
       - name: contact-api
-        image: gru.ocir.io/grffsstogo8v/dev-contact-api:0.0.1
+        image: gru.ocir.io/grffsstogo8v/dev-contact-api:0.0.2
         ports:
         - containerPort: 3000
         envFrom:
