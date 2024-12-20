@@ -10,9 +10,9 @@ export class AppService {
     return { status: 'Running!' };
   }
 
-  newMessageCreated(messageBody: newMessageCreatedDTO) {
+  async newMessageCreated(messageBody: newMessageCreatedDTO) {
     try {
-      this.prismaService.message.create({ data: messageBody });
+      await this.prismaService.message.create({ data: messageBody });
 
       return {
         statusCode: 200,
