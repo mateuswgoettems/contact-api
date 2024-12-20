@@ -92,7 +92,7 @@ jobs:
           ssh-key: ${{ secrets.GH_SSH_KEY }}
       - name: Get Image Tag
         run: |
-            echo "IMAGE_TAG=$(cat package.json | jq -r .version)" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$(cat package.json | jq -r .version)" >> $GITHUB_ENV
       - name: Extract environment name
         run: |
           echo "ENVIRONMENT=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
@@ -100,6 +100,14 @@ jobs:
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          fi
+      - name: Extract API URL
+        run: |
+          echo "ENVIRONMENT=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
+          if [[ $ENVIRONMENT == "main" ]]; then
+            echo "API_URL=${{ env.URL_TO_ASSUME }}" >> $GITHUB_ENV
+          else
+            echo "API_URL=dev.${{ env.URL_TO_ASSUME }}" >> $GITHUB_ENV
           fi
       - name: Get Ocir Repository
         uses: oracle-actions/get-ocir-repository@v1.2.1
@@ -113,6 +121,7 @@ jobs:
         env:
           IMAGE: ${{ steps.get-ocir-repository.outputs.repo_path }}:${{ env.IMAGE_TAG }}
           ENVIRONMENT: ${{ env.ENVIRONMENT }}
+          API_URL: ${{  env.API_URL  }}
         run: |
           cp k8s/templates/deployment.tpl k8s/${{ env.ENVIRONMENT }}/deployment.yaml
           sed -i 's|$APP_NAMESPACE|${{ env.APP_NAMESPACE }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
@@ -129,7 +138,7 @@ jobs:
           sed -i 's|$APP_NAMESPACE|${{ env.APP_NAMESPACE }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
           sed -i 's|$APP_NAME|${{ env.APP_NAME }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
           sed -i 's|$CONTAINER_PORT|${{ env.CONTAINER_PORT }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
-          sed -i 's|$URL_TO_ASSUME|${{ env.URL_TO_ASSUME }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
+          sed -i 's|$URL_TO_ASSUME|${{ env.API_URL }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
 
       - name: Add & Commit
         uses: EndBug/add-and-commit@v9.1.3
