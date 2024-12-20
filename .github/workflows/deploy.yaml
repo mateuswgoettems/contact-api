@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - dev
+    paths-ignore:
+      - k8s
 
 env:
   OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
