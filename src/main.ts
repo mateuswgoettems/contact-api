@@ -5,8 +5,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const origins =
     process.env.ENV === 'production'
-      ? [`${process.env.APP_DOMAIN}`]
-      : [`${process.env.ENV}.${process.env.APP_DOMAIN}`, 'localhost:5500'];
+      ? [`https://${process.env.APP_DOMAIN}`, `${process.env.APP_DOMAIN}`]
+      : [
+          `https://${process.env.ENV}.${process.env.APP_DOMAIN}`,
+          `${process.env.ENV}.${process.env.APP_DOMAIN}`,
+          'http://localhost:5500',
+        ];
   app.enableCors({
     origin: origins,
   });
