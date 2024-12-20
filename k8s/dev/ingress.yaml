@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: contact-api-ingress
+  namespace: manutencao-de-piscina
+  annotations:
+    kubernetes.io/ingress.class: 'nginx'
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/tls-acme: "true"
+spec:
+  defaultBackend:
+    service:
+      name: contact-api-svc
+      port:
+        number: 3000
+  tls:
+    - hosts:
+        - api.neocirgoettems.com.br
+      secretName: api.neocirgoettems.com.br
+  rules:
+    - host: api.neocirgoettems.com.br
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: contact-api-svc
+                port:
+                  number: 3000
