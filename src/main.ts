@@ -3,13 +3,18 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const origins =
+    process.env.ENV === 'production'
+      ? [`https://${process.env.APP_DOMAIN}`, `${process.env.APP_DOMAIN}`]
+      : [
+          `https://${process.env.ENV}.${process.env.APP_DOMAIN}`,
+          `${process.env.ENV}.${process.env.APP_DOMAIN}`,
+          'http://localhost:5500',
+        ];
   app.enableCors({
-    origin:
-      process.env.ENV == 'production'
-        ? `${process.env.APP_DOMAIN}`
-        : `${process.env.ENV}.${process.env.APP_DOMAIN}`,
+    origin: origins,
   });
-  console.log(process.env.APP_DOMAIN);
   await app.listen(3000);
+  console.log(origins);
 }
 bootstrap();

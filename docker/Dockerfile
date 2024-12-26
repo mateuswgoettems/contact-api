@@ -7,7 +7,7 @@ COPY package.json yarn.lock ./
 FROM base AS dependencies
 RUN mkdir -p src/database/
 COPY src/database/schema.prisma src/database/schema.prisma
-RUN yarn install --production
+RUN yarn install
 
 # ---- Build ----
 FROM dependencies AS build
