@@ -137,6 +137,7 @@ jobs:
           sed -i 's|$CONTAINER_IMAGE|${IMAGE}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
           sed -i 's|$APP_NAME|${{ env.APP_NAME }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
           sed -i 's|$CONTAINER_PORT|${{ env.CONTAINER_PORT }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
+          sed -i 's|$IMAGE|${{ env.IMAGE }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
 
           cp k8s/templates/service.tpl k8s/${{ env.ENVIRONMENT }}/service.yaml
           sed -i 's|$APP_NAMESPACE|${{ env.APP_NAMESPACE }}|g' k8s/${{ env.ENVIRONMENT }}/service.yaml
