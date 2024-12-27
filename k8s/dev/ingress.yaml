@@ -15,10 +15,10 @@ spec:
         number: 3000
   tls:
     - hosts:
-        - dev.api.neocirgoettems.com.br
-      secretName: dev.api.neocirgoettems.com.br
+        - ${API_URL}
+      secretName: ${API_URL}
   rules:
-    - host: dev.api.neocirgoettems.com.br
+    - host: ${API_URL}
       http:
         paths:
           - path: /
