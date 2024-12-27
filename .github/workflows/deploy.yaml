@@ -37,18 +37,20 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
       - name: Extract environment name
         run: |
-          echo "ENVIRONMENT=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
-          if [[ $ENVIRONMENT == "main" ]]; then
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
           fi
+
       - name: Get OCIR Repository
         uses: oracle-actions/get-ocir-repository@v1.2.1
         id: get-ocir-repository
@@ -57,6 +59,7 @@ jobs:
         with:
           name: ${{ env.ENVIRONMENT }}-${{ env.APP_NAME }}
           compartment: ${{ secrets.OCI_CLI_COMPARTMENT_OCID }}
+
       - name: Get Image Tag
         run: |
           echo "IMAGE_TAG=$(cat package.json | jq -r .version)" >> $GITHUB_ENV
@@ -67,6 +70,7 @@ jobs:
           registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           password: ${{ secrets.OCI_CLI_AUTH_TOKEN }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -92,25 +96,27 @@ jobs:
         uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.GH_SSH_KEY }}
+
       - name: Get Image Tag
         run: |
           echo "IMAGE_TAG=$(cat package.json | jq -r .version)" >> $GITHUB_ENV
+
       - name: Extract environment name
         run: |
-          echo "ENVIRONMENT=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
-          if [[ $ENVIRONMENT == "main" ]]; then
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "ENVIRONMENT=prod" >> $GITHUB_ENV
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_ENV
           fi
+
       - name: Extract API URL
         run: |
-          echo "ENVIRONMENT=$(echo ${GITHUB_REF_NAME})" >> $GITHUB_ENV
-          if [[ $ENVIRONMENT == "main" ]]; then
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "API_URL=${{ env.URL_TO_ASSUME }}" >> $GITHUB_ENV
           else
             echo "API_URL=dev.${{ env.URL_TO_ASSUME }}" >> $GITHUB_ENV
           fi
+
       - name: Get Ocir Repository
         uses: oracle-actions/get-ocir-repository@v1.2.1
         id: get-ocir-repository
@@ -119,15 +125,16 @@ jobs:
         with:
           name: ${{ env.ENVIRONMENT }}-${{ env.APP_NAME }}
           compartment: ${{ secrets.OCI_CLI_COMPARTMENT_OCID }}
+
       - name: Remove old Deployment file
         env:
           IMAGE: ${{ steps.get-ocir-repository.outputs.repo_path }}:${{ env.IMAGE_TAG }}
           ENVIRONMENT: ${{ env.ENVIRONMENT }}
-          API_URL: ${{  env.API_URL  }}
+          API_URL: ${{ env.API_URL }}
         run: |
           cp k8s/templates/deployment.tpl k8s/${{ env.ENVIRONMENT }}/deployment.yaml
           sed -i 's|$APP_NAMESPACE|${{ env.APP_NAMESPACE }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
-          sed -i 's|$CONTAINER_IMAGE|${{ env.IMAGE }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
+          sed -i 's|$CONTAINER_IMAGE|${IMAGE}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
           sed -i 's|$APP_NAME|${{ env.APP_NAME }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
           sed -i 's|$CONTAINER_PORT|${{ env.CONTAINER_PORT }}|g' k8s/${{ env.ENVIRONMENT }}/deployment.yaml
 
@@ -140,7 +147,7 @@ jobs:
           sed -i 's|$APP_NAMESPACE|${{ env.APP_NAMESPACE }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
           sed -i 's|$APP_NAME|${{ env.APP_NAME }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
           sed -i 's|$CONTAINER_PORT|${{ env.CONTAINER_PORT }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
-          sed -i 's|$URL_TO_ASSUME|${{ env.API_URL }}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
+          sed -i 's|$URL_TO_ASSUME|${API_URL}|g' k8s/${{ env.ENVIRONMENT }}/ingress.yaml
 
       - name: Add & Commit
         uses: EndBug/add-and-commit@v9.1.3

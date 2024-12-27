@@ -15,6 +15,5 @@ async function bootstrap() {
     origin: origins,
   });
   await app.listen(3000);
-  console.log(origins);
 }
 bootstrap();
