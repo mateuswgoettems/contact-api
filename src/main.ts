@@ -9,7 +9,6 @@ async function bootstrap() {
       : [
           `https://${process.env.ENV}.${process.env.APP_DOMAIN}`,
           `${process.env.ENV}.${process.env.APP_DOMAIN}`,
-          'http://localhost:5500',
         ];
   app.enableCors({
     origin: origins,
