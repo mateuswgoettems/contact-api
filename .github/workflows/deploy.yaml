@@ -5,8 +5,9 @@ on:
     branches:
       - main
       - dev
-    paths-ignore:
-      - k8s/
+    paths:
+      - 'package.json'
+  
 
 env:
   OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
@@ -93,7 +94,7 @@ jobs:
     name: Update template to deployment service and ingress
     steps:
       - name: Pull Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.GH_SSH_KEY }}
 
@@ -154,5 +155,6 @@ jobs:
         with:
           add: k8s
           author_name: AutoCommit
-          message: '[#AutoCommit] Release - Changing Deployment Files'
+          author_email: actions@github.com
+          message: '[#AutoCommit] Release - Update Deployment Files to v${{ env.IMAGE_TAG }}'
           push: true

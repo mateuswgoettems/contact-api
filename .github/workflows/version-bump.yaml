@@ -1,0 +1,44 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - 'package.json'
+      - '.github/workflows/version-bump.yml'
+      - 'k8s/**'
+      - '.github/workflows/**'
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull Code
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.GH_SSH_KEY }}
+          fetch-depth: 0
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Increment App Version
+        id: bump_version
+        run: |
+          NEW_VERSION=$(npm version patch -m "chore: bump version to %s")
+          echo "New Version: $NEW_VERSION"
+
+      - name: Push Versão Bump
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          ssh: true
+          branch: ${{ github.ref }}
+          force: false
