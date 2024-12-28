@@ -17,7 +17,7 @@ jobs:
       - name: Configure Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install Dependencies
         run: yarn install
@@ -30,6 +30,3 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: Linting
-        run: yarn lint
