@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { newMessageCreatedDTO } from './createMessage.dto';
+import { NewMessageCreatedDTO } from './createMessage.dto';
 
 @Controller()
 export class AppController {
@@ -12,7 +12,7 @@ export class AppController {
   }
 
   @Post()
-  newMessageSent(@Body() createNewMessageDTO: newMessageCreatedDTO) {
+  newMessageSent(@Body() createNewMessageDTO: NewMessageCreatedDTO) {
     return this.appService.newMessageCreated(createNewMessageDTO);
   }
 }

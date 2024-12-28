@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { newMessageCreatedDTO } from './createMessage.dto';
+import { NewMessageCreatedDTO } from './createMessage.dto';
 import { PrismaService } from './database/prisma.service';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class AppService {
     return { status: 'Running!' };
   }
 
-  async newMessageCreated(messageBody: newMessageCreatedDTO) {
+  async newMessageCreated(messageBody: NewMessageCreatedDTO) {
     try {
       await this.prismaService.message.create({ data: messageBody });
 
