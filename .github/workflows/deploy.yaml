@@ -155,5 +155,6 @@ jobs:
         with:
           add: k8s
           author_name: AutoCommit
-          message: '[#AutoCommit] Release - Changing Deployment Files'
+          author_email: actions@github.com
+          message: '[#AutoCommit] Release - Update Deployment Files to v${{ env.IMAGE_TAG }}'
           push: true
